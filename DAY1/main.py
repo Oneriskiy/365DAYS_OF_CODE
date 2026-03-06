@@ -66,8 +66,11 @@ class Library:
     def add_book(self, book):
         self.books.append(book)
 
+    def remove_book(self, book):
+        self.books.remove(book)
+
     def show_books(self):
-        return "All books:\n" + "\n".join([book.info() for book in self.books.copy()])
+        return "All books:\n" + "\n".join([book.info() for book in self.books])
 
     def show_unread(self):
         return "Unread books:\n" + "\n".join(
@@ -75,12 +78,40 @@ class Library:
         )
 
 
+def menu():
+    while True:
+        asc_menu = int(
+            input(
+                """choice the: 
+        1 - show all books
+        2 - show unread books
+        3 - add the book
+        4 - remove the book
+        5 - mark read
+        """.strip()
+            )
+        )
+        if asc_menu == 1:
+            print(my_library.show_books())
+        if asc_menu == 2:
+            print(my_library.show_unread())
+        if asc_menu == 3:
+            asc_menu_title = input("enter the book title: ")
+            asc_menu_author = input("enter the author of the book: ")
+            book = Book(asc_menu_title, asc_menu_author)
+            my_library.add_book(book)
+        if asc_menu == 4:
+            asc_remove = input("enter title to remove: ")
+            for book in my_library.books:
+                if book.title == asc_remove:
+                    my_library.remove_book(book)
+        if asc_menu == 5:
+            asc_mark = input("Enter a title to mark the book")
+            for book in my_library.books:
+                if book.title == asc_mark:
+                    book.mark_read()
+
+
 if __name__ == "__main__":
-    my_book = Book("War and Peace", "Leo Tolstoy")
-    my_book_two = Book("Dead Souls", "Nikolai Gogol")
     my_library = Library()
-    my_library.add_book(my_book)
-    my_library.add_book(my_book_two)
-    my_book.mark_read()
-    print(my_library.show_books())
-    print(my_library.show_unread())
+    menu()

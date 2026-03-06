@@ -1,4 +1,6 @@
 import time
+
+
 class Book:
     """
     Represents a book with a title, author, and read status.
@@ -105,31 +107,63 @@ def menu():
             3 - add the book
             4 - remove the book
             5 - mark read
+            6 - exit
             >>
             """.strip()
                 )
             )
             if asc_menu == 1:
-                print(my_library.show_books()) if my_library.books else print("It's empty here..")
-            if asc_menu == 2:
+                (
+                    print(my_library.show_books())
+                    if my_library.books
+                    else print("It's empty here..")
+                )
+            elif asc_menu == 2:
                 print(my_library.show_unread())
-            if asc_menu == 3:
-                asc_menu_title = input("enter the book title: ")
-                asc_menu_author = input("enter the author of the book: ")
-                book = Book(asc_menu_title, asc_menu_author)
-                my_library.add_book(book)
-            if asc_menu == 4:
-                asc_remove = input("enter title to remove: ")
-                for book in my_library.books:
-                    if book.title == asc_remove:
-                        my_library.remove_book(book)
-            if asc_menu == 5:
-                asc_mark = input("Enter a title to mark the book")
-                for book in my_library.books:
-                    if book.title == asc_mark:
-                        book.mark_read()
+            elif asc_menu == 3:
+                try:
+                    asc_menu_title = input("enter the book title: ")
+                    asc_menu_author = input("enter the author of the book: ")
+                    book = Book(asc_menu_title, asc_menu_author)
+                    my_library.add_book(book)
+                except KeyboardInterrupt:
+                    print("\ngoodbye!")
+                    break
+            elif asc_menu == 4:
+                try:
+                    found = False
+                    asc_remove = input("enter title to remove: ")
+                    for book in my_library.books:
+                        if book.title == asc_remove:
+                            my_library.remove_book(book)
+                            found = True
+                            print("successfully!")
+                            break
+                    if not found:
+                        print("not found..")
+                except KeyboardInterrupt:
+                    print("\ngoodbye!")
+                    break
+
+            elif asc_menu == 5:
+                try:
+                    asc_mark = input("Enter a title to mark the book: ")
+                    for book in my_library.books:
+                        if book.title == asc_mark:
+                            book.mark_read()
+                except KeyboardInterrupt:
+                    print("\ngoodbye!")
+                    break
+            elif asc_menu == 6:
+                print("goodbye!")
+                break
+            else:
+                print("enter the correct integer!")
         except ValueError:
             print("enter the integer!")
+        except KeyboardInterrupt:
+            print("\ngoodbye!")
+            break
 
 if __name__ == "__main__":
     my_library = Library()

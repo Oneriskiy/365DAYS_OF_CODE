@@ -1,3 +1,4 @@
+import time
 class Book:
     """
     Represents a book with a title, author, and read status.
@@ -79,38 +80,56 @@ class Library:
 
 
 def menu():
-    while True:
-        asc_menu = int(
-            input(
-                """choice the: 
-        1 - show all books
-        2 - show unread books
-        3 - add the book
-        4 - remove the book
-        5 - mark read
-        """.strip()
-            )
-        )
-        if asc_menu == 1:
-            print(my_library.show_books())
-        if asc_menu == 2:
-            print(my_library.show_unread())
-        if asc_menu == 3:
-            asc_menu_title = input("enter the book title: ")
-            asc_menu_author = input("enter the author of the book: ")
-            book = Book(asc_menu_title, asc_menu_author)
-            my_library.add_book(book)
-        if asc_menu == 4:
-            asc_remove = input("enter title to remove: ")
-            for book in my_library.books:
-                if book.title == asc_remove:
-                    my_library.remove_book(book)
-        if asc_menu == 5:
-            asc_mark = input("Enter a title to mark the book")
-            for book in my_library.books:
-                if book.title == asc_mark:
-                    book.mark_read()
+    """
+    Runs the command-line interface (CLI) menu for managing the book library.
 
+    The function continuously prompts the user to choose an action:
+    - view all books
+    - view unread books
+    - add a new book
+    - remove a book
+    - mark a book as read
+
+    The menu runs in an infinite loop until the program is terminated manually.
+    It also handles invalid input using a ValueError exception.
+    """
+
+    while True:
+        try:
+            time.sleep(0.5)
+            asc_menu = int(
+                input(
+                    """choice the: 
+            1 - show all books
+            2 - show unread books
+            3 - add the book
+            4 - remove the book
+            5 - mark read
+            >>
+            """.strip()
+                )
+            )
+            if asc_menu == 1:
+                print(my_library.show_books()) if my_library.books else print("It's empty here..")
+            if asc_menu == 2:
+                print(my_library.show_unread())
+            if asc_menu == 3:
+                asc_menu_title = input("enter the book title: ")
+                asc_menu_author = input("enter the author of the book: ")
+                book = Book(asc_menu_title, asc_menu_author)
+                my_library.add_book(book)
+            if asc_menu == 4:
+                asc_remove = input("enter title to remove: ")
+                for book in my_library.books:
+                    if book.title == asc_remove:
+                        my_library.remove_book(book)
+            if asc_menu == 5:
+                asc_mark = input("Enter a title to mark the book")
+                for book in my_library.books:
+                    if book.title == asc_mark:
+                        book.mark_read()
+        except ValueError:
+            print("enter the integer!")
 
 if __name__ == "__main__":
     my_library = Library()

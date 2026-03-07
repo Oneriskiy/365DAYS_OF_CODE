@@ -1,11 +1,13 @@
 import time
 from config import logger
 
-YELLOW = "\033[33m"
-GREEN = "\033[32m"
-PURPLE = "\033[35m"
-BLUE = "\033[36m"
-RESET = "\033[0m"
+colors = {
+    "YELLOW": "\033[33m",
+    "GREEN": "\033[32m",
+    "PURPLE": "\033[35m",
+    "BLUE": "\033[36m",
+    "RESET": "\033[0m",
+}
 
 
 class Hero:
@@ -17,22 +19,32 @@ class Hero:
     Methods:
     info(): Returns character information
     attack(): Stores combat logic
+    take_damage(): receiving damage from an enemy
+    loading_battle(): visual loading
     """
 
     def __init__(self, health, damage):
-        self.health = health
-        self.damage = damage
+        self.__health = health
+        self.__damage = damage
+
+    @property
+    def health(self):
+        return self.__health
+
+    @property
+    def damage(self):
+        return self.__damage
 
     def info(self):
         logger.debug("information about the character is displayed")
         return f" The hero has {self.health} HP and {self.damage} damage"
 
     def take_damage(self, dmg):
-        self.health -= dmg
+        self.__health -= dmg
 
     def loading_battle(self):
         for _ in range(1, 13):
-            print(f"{YELLOW}||{RESET}{GREEN}", end="")
+            print(f"{colors.get('YELLOW')}||{colors.get('RESET')}", end="")
             time.sleep(0.1)
 
     def attack(self, other):
@@ -43,11 +55,13 @@ class Hero:
         for i in range(1, 100):
             if turn_on:
                 self.loading_battle()
-                print(f"\nround {i} {PURPLE}{self}{RESET} hits {BLUE}{other}{RESET}")
+                print(
+                    f"\nround {i} {colors.get('PURPLE')}{self}{colors.get('RESET')} hits {colors.get('BLUE')}{other}{colors.get('RESET')}"
+                )
                 time.sleep(1.3)
                 other.take_damage(self.damage)
                 print(
-                    f"{self} hits {BLUE}{other}{RESET}, {BLUE}{other}{RESET} has {GREEN}{other.health}hp{RESET} left\n"
+                    f"{self} hits {colors.get('BLUE')}{other}{colors.get('RESET')}, {colors.get('BLUE')}{other}{colors.get('RESET')} has {colors.get('GREEN')}{other.health}hp{colors.get('RESET')} left\n"
                 )
                 time.sleep(1.6)
                 turn_on = False
@@ -57,11 +71,13 @@ class Hero:
                     break
             else:
                 self.loading_battle()
-                print(f"\nround {i} {BLUE}{other}{RESET} hits {PURPLE}{self}{RESET}")
+                print(
+                    f"\nround {i} {colors.get('BLUE')}{other}{colors.get('RESET')} hits {colors.get('PURPLE')}{self}{colors.get('RESET')}"
+                )
                 time.sleep(1.3)
                 self.take_damage(other.damage)
                 print(
-                    f"{BLUE}{other}{RESET} hits {PURPLE}{self}{RESET}, {PURPLE}{self}{RESET} has {GREEN}{self.health}hp{RESET} left\n"
+                    f"{colors.get('BLUE')}{other}{colors.get('RESET')} hits {colors.get('PURPLE')}{self}{colors.get('RESET')}, {colors.get('PURPLE')}{self}{colors.get('RESET')} has {colors.get('GREEN')}{self.health}hp{colors.get('RESET')} left\n"
                 )
                 time.sleep(1.6)
                 turn_on = True
@@ -79,20 +95,25 @@ class Doctor(Hero):
     Methods:
     regeneration_hp(): Character regeneration logic
     info(): Returns character information
+    take_damage(): receiving damage from an enemy
     constructor __str__(): Returns the character type
     """
 
     def __init__(self, health, damage, regeneration):
         super().__init__(health, damage)
-        self.regeneration = regeneration
+        self.__regeneration = regeneration
+
+    @property
+    def regeneration(self):
+        return self.__regeneration
 
     def take_damage(self, dmg):
         if self.health <= 115:
-            self.health += self.regeneration
+            self.__health += self.regeneration
             print(f"{self} Received healing equal to {self.regeneration}HP!")
-            self.health -= dmg
+            self.__health -= dmg
         else:
-            self.health -= dmg
+            self.__health -= dmg
 
     def __str__(self):
         return "Doctor"
@@ -110,30 +131,39 @@ class Prince(Hero):
     Methods:
     defense(): Character defense logic
     info(): Returns character information
+    take_damage(): receiving damage from an enemy
     constructor __str__(): Returns character type
     """
 
     def __init__(self, health, damage, shield, boolean_false=False):
         super().__init__(health, damage)
-        self.shield = shield
-        self.boolean_false = boolean_false
+        self.__shield = shield
+        self.__boolean_false = boolean_false
+
+    @property
+    def shield(self):
+        return self.__shield
+
+    @property
+    def boolean_false(self):
+        return self.__boolean_false
 
     def take_damage(self, dmg):
         if self.shield > 0:
             if dmg <= self.shield:
-                self.shield -= dmg
+                self.__shield -= dmg
                 dmg = 0
                 print(
                     f"The shield repelled the attack! Remaining shield strength: {self.shield}"
                 )
             else:
                 dmg -= self.shield
-                self.shield = 0
+                self.__shield = 0
         if self.shield <= 0:
             if not self.boolean_false:
                 print("the shield is broken!")
-                self.boolean_false = True
-        self.health -= dmg
+                self.__boolean_false = True
+        self.__health -= dmg
 
     def info(self):
         text = super().info()
@@ -155,12 +185,12 @@ def menu():
         try:
             menu_asc = int(
                 input(
-                    """          
+                    f"""          
                 Select the desired action:
-                1 - \033[35mPlay as the Mage against the Prince\033[0m
-                2 - \033[35mPlay as the Prince against the Mage\033[0m
-                3 - \033[33mDisplay information about a character\033[0m
-                4 - \033[32mExit\033[0m
+                1 - {colors.get('PURPLE')}Play as the Mage against the Prince
+                2 - Play as the Prince against the Mage{colors.get('RESET')}
+                3 - {colors.get('YELLOW')}Display information about a character{colors.get('RESET')}
+                4 - {colors.get('GREEN')}Exit{colors.get('RESET')}
                 >>
                         """.strip()
                 )

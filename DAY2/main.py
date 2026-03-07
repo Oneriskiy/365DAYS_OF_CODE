@@ -1,3 +1,8 @@
+import time
+import logging
+from config import logger
+
+
 class Hero:
     """
     Parent class, initializes the character's health and damage.
@@ -14,9 +19,11 @@ class Hero:
         self.damage = damage
 
     def info(self):
+        logger.debug("information about the character is displayed")
         return f" The hero has {self.health} HP and {self.damage} damage"
 
     def attack(self, other):
+        logger.debug("the battle has begun")
         count = 0
         while True:
             if count % 2 == 0:
@@ -25,12 +32,15 @@ class Hero:
                 count += 1
                 if other.health <= 0:
                     print(f"The enemy {other} is defeated!")
+                    logger.debug("the fight is over")
                     break
+
             else:
                 self.health -= other.damage
                 print(f"{self} hp: {self.health}\n")
                 count += 1
                 if self.health <= 0:
+                    logger.debug("the fight is over")
                     print(f"Our character {self}  is defeated!")
                     break
 
@@ -101,37 +111,57 @@ def initializing_characters():
 
 
 def menu():
-    initializing_characters()
-    prince, doctor = initializing_characters()
-    menu_asc = int(
-        input(
-            """          
-        Select the desired action:
-        1 - Play as the Mage against the Prince
-        2 - Play as the Prince against the Mage
-        3 - Display information about a character
-        >>
-                """.strip()
-        )
-    )
-    if menu_asc == 1:
-        doctor.attack(prince)
-    if menu_asc == 2:
-        prince.attack(doctor)
-    if menu_asc == 3:
-        hero_choice = int(
-            input(
-                """
-        Choose a character from the list below:
-        1 - Doctor
-        2 - Prince
-        """.strip()
+    while True:
+        prince, doctor = initializing_characters()
+        try:
+            menu_asc = int(
+                input(
+                    """          
+                Select the desired action:
+                1 - Play as the Mage against the Prince
+                2 - Play as the Prince against the Mage
+                3 - Display information about a character
+                4 - Exit
+                >>
+                        """.strip()
+                )
             )
-        )
-        if hero_choice == 1:
-            print(doctor.info())
-        elif hero_choice == 2:
-            print(prince.info())
+            if menu_asc == 1:
+                logger.debug("the game for the magician was chosen")
+                doctor.attack(prince)
+                time.sleep(0.3)
+            elif menu_asc == 2:
+                logger.debug("the game for the prince was chosen")
+                prince.attack(doctor)
+                time.sleep(0.3)
+            elif menu_asc == 3:
+                logger.debug("character information selected")
+                hero_choice = int(
+                    input(
+                        """
+                Choose a character from the list below:
+                1 - Doctor
+                2 - Prince
+                """.strip()
+                    )
+                )
+                if hero_choice == 1:
+                    logger.debug("information about the magician has been selected")
+                    print(doctor.info())
+                elif hero_choice == 2:
+                    logger.debug("information about the prince has been selected")
+                    print(prince.info())
+            if menu_asc == 4:
+                logger.debug("output selected")
+                print("\ngoodbye!")
+                break
+        except ValueError:
+            logger.error("a non-integer number was entered")
+            print("enter the integer!")
+        except KeyboardInterrupt:
+            logger.info("the user stopped the code")
+            print("\ngoodbye!")
+            break
 
 
 if __name__ == "__main__":

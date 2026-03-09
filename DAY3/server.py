@@ -1,12 +1,26 @@
 import asyncio
 import websockets
 
+clients = set()
+
 async def handler(websocket):
-    pass
+    clients.add(websocket)
+    try:
+        async for msg in websocket:
+            for c in clients:
+                if c != websocket:
+                    await c.send(msg)
+    except websockets.exceptions.ConnectionClosed:
+        pass
+    finally:
+        clients.remove(websocket)
 
 async def main():
-    server = await websockets.serve(handler, 'localhost', 5000)
-    print("сервер запущен!")
+    host = 'localhost'
+    port = 5000
+    server = await websockets.serve(handler, host, port)
+    print('сервер запущен...')
     await asyncio.Future()
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

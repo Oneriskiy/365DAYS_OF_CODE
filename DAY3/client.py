@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 
+
 async def listen(websocket):
     """
     Checks for incoming messages,
@@ -8,6 +9,7 @@ async def listen(websocket):
     """
     async for msg in websocket:
         print(f"sent to you: {msg}")
+
 
 async def send(websocket):
     """
@@ -18,10 +20,16 @@ async def send(websocket):
         msg = await loop.run_in_executor(None, input)
         await websocket.send(msg)
 
+
 async def main():
     """
     The main function connects the client to the server
     and activates other functions (listen(), send())
     """
-    async with websockets.connect('ws://localhost:5000') as websocket:
-        await asyncio.gather(listen(websocket),send(websocket))
+    async with websockets.connect("ws://localhost:5000") as websocket:
+        name = input("Введите имя: ")
+        await websocket.send(f"__name__:{name}")
+        await asyncio.gather(listen(websocket), send(websocket))
+
+
+asyncio.run(main())

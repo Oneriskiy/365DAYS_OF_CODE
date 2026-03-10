@@ -1,16 +1,19 @@
 import websockets
 import asyncio
 from datetime import datetime as dt
+from config import logger
 
 
 def timer():
     """
     return: returns the time at the current moment
     """
-    time_now = dt.now().strftime('%d.%H.%M.%S')
+    time_now = dt.now().strftime("%d.%H.%M.%S")
     return time_now
 
-clients = set()
+
+clients = {}
+
 
 async def handler(websocket):
     """
@@ -19,17 +22,20 @@ async def handler(websocket):
     and sends them to other clients if the user has disconnected.
     It notifies them of this.
     """
-    clients.add(websocket)
-    print(f"{timer()} | the user has connected")
     try:
+        msg = await websocket.recv()
+        if msg.startswith("__name__:"):
+            name = msg.split(":", 1)[1]
+            clients[websocket] = name
+            logger.debug(f"{name} the user has connected")
         async for msg in websocket:
-            for c in clients:
+            for c, c_name in clients.items():
                 if c != websocket:
-                    await c.send(msg)
+                    await c.send(f"{name}: {msg}")
     except Exception:
-        print(f"{timer()} | user disconnected")
+        logger.info("user disconnected")
     finally:
-        clients.remove(websocket)
+        del clients[websocket]
 
 
 async def main():
@@ -37,10 +43,12 @@ async def main():
     The main function starts the server on the local host
     and runs the handler() function.
     """
-    host = 'localhost'
+    host = "localhost"
     port = 5000
     server = await websockets.serve(handler, host, port)
-    print(f'{timer()} | server is running')
+    print(f"{timer()} | server is running")
+    logger.debug("server is running")
     await asyncio.Future()
+
 
 asyncio.run(main())

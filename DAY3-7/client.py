@@ -35,11 +35,27 @@ async def main():
     and activates other functions (listen(), send())
     """
     URI = "ws://localhost:5000"
-    async with websockets.connect(URI, ping_interval=20, ping_timeout=60) as websocket:
-        name = input("enter the name: ")
-        await websocket.send(f"__name__:{name}")
-        await asyncio.gather(listen(websocket, name), send(websocket))
+    while True:
+        try:
+            async with websockets.connect(URI, ping_interval=20, ping_timeout=60) as websocket:
+                name = input("enter the name: ")
+                await websocket.send(f"__name__:{name}")
+                await asyncio.gather(listen(websocket, name), send(websocket))
+        except websockets.exceptions.InvalidURI:
+            print("Invalid URI")
+            break
 
+        except websockets.exceptions.InvalidHandshake:
+            print("Invalid Handshake")
+            break
+
+        except ConnectionRefusedError:
+            print("Server is not running")
+            break
+
+        except websockets.ConnectionClosedError:
+            print("reconnecting..for 5 seconds")
+            await asyncio.sleep(5)
 
 if __name__ == "__main__":
     asyncio.run(main())

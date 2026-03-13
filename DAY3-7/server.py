@@ -11,6 +11,15 @@ def timer():
     time_now = dt.now().strftime("%d.%H.%M.%S")
     return time_now
 
+async def handshake(websocket):
+    while True:
+        try:
+            pong = await websocket.ping()
+            await pong
+            print("heartbeat-OK")
+        except Exception:
+            print("connection lost")
+        await asyncio.sleep(20)
 
 clients = {}
 
@@ -22,7 +31,7 @@ async def handler(websocket):
     and sends them to other clients if the user has disconnected.
     It notifies them of this.
     """
-    name = None
+    asyncio.create_task(handshake(websocket))
     try:
         msg = await websocket.recv()
         if msg.startswith("__name__:"):
@@ -48,6 +57,12 @@ async def handler(websocket):
     except websockets.exceptions.ConnectionClosedOK:
         logger.info("user disconnected")
         clients.pop(websocket, None)
+
+    except websockets.exceptions.ConnectionClosedError:
+        logger.info("server-error")
+
+    except websockets.exceptions.ConnectionClosed:
+        logger.info("Connection closed")
 
 
 async def main():

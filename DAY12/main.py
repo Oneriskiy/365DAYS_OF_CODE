@@ -37,7 +37,6 @@ def main_get():
     return name
 
 
-
 @app.post("/",
             summary="Username here",
             description="Gets the username",
@@ -58,19 +57,29 @@ def func_monument():
     return monuments
 
 
-@app.post("/monuments/m",
+@app.post("/monuments",
             summary="monuments here",
             description = "receives all the monuments",
             tags=['monuments', 'monuments_post']
           )
+
+
 def add_monument(monument: Monument):
     monuments[monument.title] = monument.price
     return {"message": f"Monument '{monument.title}' added", "monuments": monuments}
 
 
+@app.put("/monuments/{title}")
+def updater_monument(title: str, monument: Monument):
+    if not title in monuments:
+        raise HTTPException(status_code=404, detail="Not found")
+    monuments[title] = monument.price
+    return {'message': f"update! {title}, {monuments}"}
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app",
-                host = 'localhost',
+                host = '127.0.0.1',
                 port = 5000,
                 reload=True)
 

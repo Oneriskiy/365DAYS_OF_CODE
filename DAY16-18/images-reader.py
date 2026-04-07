@@ -17,7 +17,7 @@ def reader():
                 main = f.read(64)
                 if main.startswith(signatures['JPG']):
                     JPG.append(f)
-                if main.startswith(signatures['\x89PNG']):
+                if main.startswith(signatures['PNG']):
                     PNG.append(f)
                 if signatures['AVIF'] in main:
                     AVIF.append(f)

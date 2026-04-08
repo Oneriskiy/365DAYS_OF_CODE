@@ -1,3 +1,3 @@
-from .users import *
+from .config import *
 
-__all__ = ['users']
+__all__ = ['users', 'users_permissions', 'ON', 'OFF']

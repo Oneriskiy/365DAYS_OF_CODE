@@ -5,13 +5,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 | (Windows 10 AT win x64)',
+    'Accept': 'text/html',
+    "Accept-Language": "ru-RU,ru;q=0.9"
+}
+
+data = {
+    'name': 'german',
+    'password': 'G1e9r2dwf'
+
+}
+
 url = os.getenv('URL')
-response = requests.get(url)
+session = requests.Session()
+
+response = session.post(url, headers=headers)
 text = response.text
 
+print(response.status_code)
 soup = BeautifulSoup(text, "html.parser")
 
-for h in soup.find_all(["h1", "h2", "h3"]):
-    text = h.get_text(strip=True)
+for s in soup.find_all('strong'):
+    text = s.get_text(strip=True)
     if text:
         print(text)

@@ -1,14 +1,9 @@
-from PyQt6.QtWidgets import (
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QTextEdit
-)
+from PyQt6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit
 from utils import *
 
 mainText = QLabel("Mini-Messenger")
 
-button = QPushButton('send')
+button = QPushButton("send")
 text = QLineEdit()
 text.setPlaceholderText("input the message")
 chat = QTextEdit()
